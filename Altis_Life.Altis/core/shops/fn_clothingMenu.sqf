@@ -6,7 +6,7 @@
 	Opens and initializes the clothing store menu.
 	Started clean, finished messy.
 */
-private["_list","_clothes","_pic","_filter"];
+private["_list","_clothes","_pic","_filter","_exitshop"];
 createDialog "Life_Clothing";
 disableSerialization;
 
@@ -18,11 +18,19 @@ if((_this select 3) in ["cop"] && playerSide != west) exitWith {hint "You need t
 life_clothing_store = _this select 3;
 
 //License Check?
+_exitshop = false;
 _var = [life_clothing_store,0] call life_fnc_licenseType;
 if(_var select 0 != "") then
 {
-	if(!(missionNamespace getVariable (_var select 0))) exitWith {hint format["You need a %1 to buy from this shop!",[_var select 0] call life_fnc_varToStr]; closeDialog 0;};
+	if(!(missionNamespace getVariable (_var select 0))) exitWith {
+		_exitshop = true;
+		hint format["You need a %1 to buy from this shop!",[_var select 0] call life_fnc_varToStr]; closeDialog 0;
+	};
 };
+
+// exitwith is not designed to exit scripts so can fail.
+if (!_exitshop) then
+{
 
 //initialize camera view
 life_shop_cam = "CAMERA" camCreate getPos player;
@@ -167,4 +175,6 @@ life_clothing_purchase = [-1,-1,-1,-1,-1];
 if(playerSide == west) then
 {
 	[] call life_fnc_saveGear;
+};
+
 };
